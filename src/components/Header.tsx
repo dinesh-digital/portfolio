@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
-import logo from '../assets/logo.png'; // Adjust the path as necessary
+import logo from '../../src/assets/logo.png'; // Adjust the path as necessary
 
 const Logo: React.FC<{ height?: number }> = ({ height = 40 }) => (
   <img src={logo} alt="Logo" style={{ height }} />
