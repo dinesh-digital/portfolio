@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, AlertTriangle, CheckCircle, ExternalLink, Calendar } from 'lucide-react';
+import {
+  RefreshCw,
+  AlertTriangle,
+  CheckCircle,
+  ExternalLink,
+  Calendar
+} from 'lucide-react';
 import { linkChecker } from '../../utils/linkChecker';
 
 interface LinkCheckResult {
@@ -22,7 +28,7 @@ interface LinkCheckReport {
 const LinkCheckReport: React.FC = () => {
   const [currentReport, setCurrentReport] = useState<LinkCheckReport | null>(null);
   const [isChecking, setIsChecking] = useState(false);
-  const [reports, setReports] = useState<LinkCheckReport[]>([]);
+  const [, setReports] = useState<LinkCheckReport[]>([]); // 👈 fixed: ignore unused variable
 
   useEffect(() => {
     loadReports();
@@ -31,7 +37,7 @@ const LinkCheckReport: React.FC = () => {
   const loadReports = () => {
     const storedReports = linkChecker.getStoredReports();
     setReports(storedReports);
-    
+
     const latest = linkChecker.getLatestReport();
     setCurrentReport(latest);
   };
@@ -82,7 +88,9 @@ const LinkCheckReport: React.FC = () => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">Link Check Report</h2>
-              <p className="text-gray-600 mt-1">Monitor and manage internal links across your website</p>
+              <p className="text-gray-600 mt-1">
+                Monitor and manage internal links across your website
+              </p>
             </div>
             <button
               onClick={runLinkCheck}
@@ -101,23 +109,31 @@ const LinkCheckReport: React.FC = () => {
             <div className="p-6 border-b border-gray-200">
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="bg-blue-50 p-4 rounded-lg">
-                  <div className="text-2xl font-bold text-blue-600">{currentReport.totalLinks}</div>
+                  <div className="text-2xl font-bold text-blue-600">
+                    {currentReport.totalLinks}
+                  </div>
                   <div className="text-sm text-blue-600">Total Links</div>
                 </div>
                 <div className="bg-green-50 p-4 rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">{currentReport.workingLinks}</div>
+                  <div className="text-2xl font-bold text-green-600">
+                    {currentReport.workingLinks}
+                  </div>
                   <div className="text-sm text-green-600">Working</div>
                 </div>
                 <div className="bg-red-50 p-4 rounded-lg">
-                  <div className="text-2xl font-bold text-red-600">{currentReport.brokenLinks}</div>
+                  <div className="text-2xl font-bold text-red-600">
+                    {currentReport.brokenLinks}
+                  </div>
                   <div className="text-sm text-red-600">Broken</div>
                 </div>
                 <div className="bg-yellow-50 p-4 rounded-lg">
-                  <div className="text-2xl font-bold text-yellow-600">{currentReport.redirects}</div>
+                  <div className="text-2xl font-bold text-yellow-600">
+                    {currentReport.redirects}
+                  </div>
                   <div className="text-sm text-yellow-600">Redirects</div>
                 </div>
               </div>
-              
+
               <div className="mt-4 flex items-center text-sm text-gray-500">
                 <Calendar className="w-4 h-4 mr-1" />
                 Last checked: {new Date(currentReport.timestamp).toLocaleString()}
@@ -127,13 +143,14 @@ const LinkCheckReport: React.FC = () => {
             {/* Detailed Results */}
             <div className="p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Link Details</h3>
-              
+
               {currentReport.brokenLinks > 0 && (
                 <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
                   <div className="flex items-center mb-2">
                     <AlertTriangle className="w-5 h-5 text-red-500 mr-2" />
                     <span className="font-medium text-red-800">
-                      {currentReport.brokenLinks} broken link{currentReport.brokenLinks !== 1 ? 's' : ''} found
+                      {currentReport.brokenLinks} broken link
+                      {currentReport.brokenLinks !== 1 ? 's' : ''} found
                     </span>
                   </div>
                   <p className="text-red-700 text-sm">
@@ -158,7 +175,11 @@ const LinkCheckReport: React.FC = () => {
                         <td className="py-3 px-4">
                           <div className="flex items-center">
                             {getStatusIcon(result.status)}
-                            <span className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(result.status)}`}>
+                            <span
+                              className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                                result.status
+                              )}`}
+                            >
                               {result.status}
                             </span>
                           </div>
@@ -178,7 +199,9 @@ const LinkCheckReport: React.FC = () => {
                             <span className="text-sm text-red-600">{result.error}</span>
                           )}
                           {result.redirectUrl && (
-                            <span className="text-sm text-yellow-600">→ {result.redirectUrl}</span>
+                            <span className="text-sm text-yellow-600">
+                              → {result.redirectUrl}
+                            </span>
                           )}
                         </td>
                       </tr>
@@ -194,7 +217,9 @@ const LinkCheckReport: React.FC = () => {
           <div className="p-12 text-center">
             <AlertTriangle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">No Reports Available</h3>
-            <p className="text-gray-600 mb-4">Run your first link check to see the results here.</p>
+            <p className="text-gray-600 mb-4">
+              Run your first link check to see the results here.
+            </p>
             <button onClick={runLinkCheck} className="btn-primary">
               Run First Check
             </button>

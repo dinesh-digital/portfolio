@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BlogPost } from '../types/blog';
-import { blogPosts } from '../data/blogData';
+// import { blogPosts } from '../data/blogData';
 import BlogHome from './blog/BlogHome';
 import BlogPostComponent from './blog/BlogPost';
 

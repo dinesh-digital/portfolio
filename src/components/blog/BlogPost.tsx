@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Clock, User, ArrowLeft, Share2, Facebook, Twitter, Linkedin } from 'lucide-react';
+import { Calendar, Clock, User, ArrowLeft, Facebook, Twitter, Linkedin } from 'lucide-react';
 import { BlogPost as BlogPostType } from '../../types/blog';
 import Breadcrumb from './Breadcrumb';
 import BlogSidebar from './BlogSidebar';
@@ -11,11 +11,11 @@ interface BlogPostProps {
 
 const BlogPost: React.FC<BlogPostProps> = ({ post, onBack }) => {
   const shareUrl = `${window.location.origin}/blog/${post.slug}`;
-  
+
   const handleShare = (platform: string) => {
     const text = `Check out this article: ${post.title}`;
     let url = '';
-    
+
     switch (platform) {
       case 'twitter':
         url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`;
@@ -27,7 +27,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ post, onBack }) => {
         url = `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`;
         break;
     }
-    
+
     if (url) {
       window.open(url, '_blank', 'width=600,height=400');
     }
@@ -36,74 +36,73 @@ const BlogPost: React.FC<BlogPostProps> = ({ post, onBack }) => {
   const breadcrumbItems = [
     { label: 'Home', href: '/' },
     { label: 'Blog', href: '/blog' },
-    { label: post.title, href: `/blog/${post.slug}` }
+    { label: post.title, href: `/blog/${post.slug}` },
   ];
 
-  // Generate structured data for SEO
   const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    "headline": post.title,
-    "description": post.metaDescription,
-    "image": post.featuredImage,
-    "author": {
-      "@type": "Person",
-      "name": post.author.name
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: post.title,
+    description: post.metaDescription,
+    image: post.featuredImage,
+    author: {
+      '@type': 'Person',
+      name: post.author.name,
     },
-    "publisher": {
-      "@type": "Organization",
-      "name": "Dinesh Digital SEO",
-      "logo": {
-        "@type": "ImageObject",
-        "url": `${window.location.origin}/DILOGO.png`
-      }
+    publisher: {
+      '@type': 'Organization',
+      name: 'Dinesh Digital SEO',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${window.location.origin}/DILOGO.png`,
+      },
     },
-    "datePublished": post.publishDate,
-    "dateModified": post.publishDate,
-    "mainEntityOfPage": {
-      "@type": "WebPage",
-      "@id": shareUrl
-    }
+    datePublished: post.publishDate,
+    dateModified: post.publishDate,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': shareUrl,
+    },
   };
 
   React.useEffect(() => {
-    // Update meta tags
     document.title = post.metaTitle;
-    
+
     // Update meta description
-    let metaDescription = document.querySelector('meta[name="description"]');
+    const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
       metaDescription.setAttribute('content', post.metaDescription);
     }
-    
-    // Add Open Graph tags
-    const ogTags = [
+
+    // Define OG and Twitter tags properly typed
+    type MetaTag = { property?: string; name?: string; content: string };
+
+    const ogTags: MetaTag[] = [
       { property: 'og:title', content: post.title },
       { property: 'og:description', content: post.metaDescription },
       { property: 'og:image', content: post.featuredImage },
       { property: 'og:url', content: shareUrl },
-      { property: 'og:type', content: 'article' }
+      { property: 'og:type', content: 'article' },
     ];
-    
-    // Add Twitter Card tags
-    const twitterTags = [
+
+    const twitterTags: MetaTag[] = [
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:title', content: post.title },
       { name: 'twitter:description', content: post.metaDescription },
-      { name: 'twitter:image', content: post.featuredImage }
+      { name: 'twitter:image', content: post.featuredImage },
     ];
-    
-    // Add canonical tag
-    let canonical = document.querySelector('link[rel="canonical"]');
+
+    // Canonical tag
+    let canonical = document.querySelector('link[rel="canonical"]') as HTMLLinkElement | null;
     if (!canonical) {
       canonical = document.createElement('link');
       canonical.setAttribute('rel', 'canonical');
       document.head.appendChild(canonical);
     }
     canonical.setAttribute('href', shareUrl);
-    
-    // Add structured data
-    let structuredDataScript = document.querySelector('#structured-data');
+
+    // Structured data script
+    let structuredDataScript = document.querySelector('#structured-data') as HTMLScriptElement | null;
     if (!structuredDataScript) {
       structuredDataScript = document.createElement('script');
       structuredDataScript.id = 'structured-data';
@@ -111,12 +110,12 @@ const BlogPost: React.FC<BlogPostProps> = ({ post, onBack }) => {
       document.head.appendChild(structuredDataScript);
     }
     structuredDataScript.textContent = JSON.stringify(structuredData);
-    
-    // Add meta tags
-    [...ogTags, ...twitterTags].forEach(tag => {
+
+    // Append OG and Twitter tags safely
+    [...ogTags, ...twitterTags].forEach((tag) => {
       const attr = tag.property ? 'property' : 'name';
-      const value = tag.property || tag.name;
-      let metaTag = document.querySelector(`meta[${attr}="${value}"]`);
+      const value = tag.property ?? tag.name ?? '';
+      let metaTag = document.querySelector(`meta[${attr}="${value}"]`) as HTMLMetaElement | null;
       if (!metaTag) {
         metaTag = document.createElement('meta');
         metaTag.setAttribute(attr, value);
@@ -124,9 +123,8 @@ const BlogPost: React.FC<BlogPostProps> = ({ post, onBack }) => {
       }
       metaTag.setAttribute('content', tag.content);
     });
-    
+
     return () => {
-      // Cleanup meta tags when component unmounts
       document.title = 'Dinesh Digital SEO - Expert SEO Services';
     };
   }, [post, shareUrl, structuredData]);
@@ -135,7 +133,7 @@ const BlogPost: React.FC<BlogPostProps> = ({ post, onBack }) => {
     <div className="min-h-screen bg-gray-50">
       <div className="container-custom py-8">
         <Breadcrumb items={breadcrumbItems} />
-        
+
         <button
           onClick={onBack}
           className="flex items-center text-primary-600 hover:text-primary-700 mb-8 transition-colors"
@@ -143,31 +141,36 @@ const BlogPost: React.FC<BlogPostProps> = ({ post, onBack }) => {
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Blog
         </button>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <article className="lg:col-span-2">
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+              {/* Image Section */}
               <div className="relative h-64 md:h-80">
-                <img 
-                  src={post.featuredImage} 
+                <img
+                  src={post.featuredImage}
                   alt={post.title}
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute top-4 left-4">
-                  <span className={`px-3 py-1 ${post.category.color} text-white text-sm font-medium rounded-full`}>
+                  <span
+                    className={`px-3 py-1 ${post.category.color} text-white text-sm font-medium rounded-full`}
+                  >
                     {post.category.name}
                   </span>
                 </div>
               </div>
-              
+
+              {/* Content Section */}
               <div className="p-8">
+                {/* Meta info row */}
                 <div className="flex items-center gap-6 text-sm text-gray-500 mb-6">
                   <div className="flex items-center">
                     <Calendar className="w-4 h-4 mr-2" />
-                    {new Date(post.publishDate).toLocaleDateString('en-US', { 
-                      year: 'numeric', 
-                      month: 'long', 
-                      day: 'numeric' 
+                    {new Date(post.publishDate).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
                     })}
                   </div>
                   <div className="flex items-center">
@@ -179,24 +182,28 @@ const BlogPost: React.FC<BlogPostProps> = ({ post, onBack }) => {
                     {post.author.name}
                   </div>
                 </div>
-                
+
+                {/* Title */}
                 <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-6">
                   {post.title}
                 </h1>
-                
+
+                {/* Author and Share Section */}
                 <div className="flex items-center justify-between mb-8 pb-6 border-b border-gray-200">
                   <div className="flex items-center">
-                    <img 
-                      src={post.author.avatar} 
+                    <img
+                      src={post.author.avatar}
                       alt={post.author.name}
                       className="w-12 h-12 rounded-full mr-4"
                     />
                     <div>
-                      <div className="font-semibold text-gray-900">{post.author.name}</div>
+                      <div className="font-semibold text-gray-900">
+                        {post.author.name}
+                      </div>
                       <div className="text-sm text-gray-600">{post.author.bio}</div>
                     </div>
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-gray-600 mr-2">Share:</span>
                     <button
@@ -222,16 +229,21 @@ const BlogPost: React.FC<BlogPostProps> = ({ post, onBack }) => {
                     </button>
                   </div>
                 </div>
-                
-                <div 
+
+                {/* Post content */}
+                <div
                   className="prose prose-lg max-w-none"
                   dangerouslySetInnerHTML={{ __html: post.content }}
                 />
-                
+
+                {/* Tags */}
                 <div className="mt-8 pt-6 border-t border-gray-200">
                   <div className="flex flex-wrap gap-2">
                     {post.tags.map((tag, index) => (
-                      <span key={index} className="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">
+                      <span
+                        key={index}
+                        className="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full"
+                      >
                         #{tag}
                       </span>
                     ))}
@@ -240,7 +252,8 @@ const BlogPost: React.FC<BlogPostProps> = ({ post, onBack }) => {
               </div>
             </div>
           </article>
-          
+
+          {/* Sidebar */}
           <aside className="lg:col-span-1">
             <BlogSidebar currentPost={post} />
           </aside>
